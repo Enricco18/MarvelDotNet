@@ -1,5 +1,5 @@
 ﻿using MarvelDotNet.Models;
-using MarvelDotNet.Repository;
+using MarvelDotNet.Database;
 using MarvelDotNet.Utils;
 using System;
 using System.Linq;

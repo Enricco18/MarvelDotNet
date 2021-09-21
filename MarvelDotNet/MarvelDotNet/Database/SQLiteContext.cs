@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MarvelDotNet.Repository
+namespace MarvelDotNet.Database
 {
     public class SQLiteContext: DbContext
     {
