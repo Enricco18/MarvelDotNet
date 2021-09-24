@@ -1,21 +1,23 @@
 ﻿using MarvelDotNet.Models;
-using MarvelDotNet.Repository;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using System.Data;
+using System.Data.SqlClient;
+using MarvelDotNet.Database;
 
 namespace MarvelDotNet.Utils
 {
-    static class OperationsMethod {
-
+    static class OperationsMethod { 
         static public void Execute(this Operation op)
         {
-            using (var db = new SQLiteContext())
+            String name, CPF, email, phone, address;
+            Int32? age;
+            Client client;
+            DatabaseManager manager = new DatabaseManager();
+            using (manager)
             {
-                String name, CPF, email, phone, address;
-                Int32? age;
-                Client client;
                 switch (op)
                 {
                     case Operation.QUIT:
@@ -26,7 +28,7 @@ namespace MarvelDotNet.Utils
                     case Operation.CREATE:
                         name = Menu.GetName();
                         age = Menu.GetAge();
-                        while (age == null)
+                        if (age == null)
                         {
                             age = 0;
                         }
@@ -36,86 +38,66 @@ namespace MarvelDotNet.Utils
                         address = Menu.GetAdress();
 
                         client = new Client(name, (int)age, CPF, email, phone, address);
-                        db.Add(client);
-                        db.SaveChanges();
+                        manager.createClient(client);
                         Console.WriteLine($"Cliente inserido com sucesso: {client.ToString()}");
 
                         break;
 
                     case Operation.READ:
                         String allOrCPF = Menu.GetAllOrByCPF();
-                        
-                        List < Client > clients = new List<Client>();
-                        if (allOrCPF== "A")
+
+                        List<Client> clients = new List<Client>();
+                        if (allOrCPF == "A")
                         {
-                           clients = db.Clients.ToList();
+                           manager.findAll();
                         }
                         else
                         {
                             CPF = Menu.GetCPF();
-                            client = db.Clients.Where<Client>(x => x.CPF == CPF).FirstOrDefault();
-                            
-                            if (client != null)
-                            {
-                                
-                                clients.Add(client);
-                            }
+                            manager.findByCPF(CPF);
                         }
-                        Menu.PrintClient(clients);
+                        
                         break;
 
                     case Operation.UPDATE:
                         CPF = Menu.GetCPF();
-                        client = db.Clients.Where<Client>(x => x.CPF == CPF).FirstOrDefault();
-
-                        if (client == null)
-                        {
-                            Console.WriteLine("Cliente não encontrado.");
-                            break;
-                        }
-
+                        Console.WriteLine("Caso não queira fazer alteração, só aperte Enter sem digitar nada.");
                         age = Menu.GetAge();
-                        if (age!=null)
+                        if (age != null)
                         {
-                            client.Age = (int)age;
+                            manager.updateClient(CPF, "Age", age.ToString());
                         }
                         name = Menu.GetName();
                         if (!String.IsNullOrEmpty(name))
                         {
-                            client.Name = name;
+                            manager.updateClient(CPF, "Name", name);
                         }
                         email = Menu.GetEmail();
                         if (!String.IsNullOrEmpty(email))
                         {
-                            client.Email = email;
+                            manager.updateClient(CPF, "Email", email);
                         }
                         phone = Menu.GetPhone();
                         if (!String.IsNullOrEmpty(phone))
                         {
-                            client.Phone = phone;
+                            manager.updateClient(CPF, "Phone", phone);
                         }
                         address = Menu.GetAdress();
                         if (!String.IsNullOrEmpty(address))
                         {
-                            client.Address = address;
+                            manager.updateClient(CPF, "Address", address);
                         }
-                        db.SaveChanges();
-                        Console.WriteLine($"Informações atualizadas com sucesso: {client}");
+                        Console.WriteLine($"Informações atualizadas com sucesso");
                         break;
 
                     case Operation.DELETE:
                         CPF = Menu.GetCPF();
-                        client = db.Clients.Where<Client>(x => x.CPF == CPF).FirstOrDefault();
-                        if(client == null)
-                        {
-                            Console.WriteLine("Cliente não encontrado na base de dados!");
-                            break;
-                        }
-                        db.Remove(client);
-                        db.SaveChanges();
-                        Console.WriteLine($"Cliente de CPF: {client.CPF} deletado com sucesso!");
+                        manager.deleteClient(CPF);
+                        Console.WriteLine($"Cliente de CPF: {CPF} deletado com sucesso!");
                         break;
-                 }        
+
+                }
+
             }
         }
     }

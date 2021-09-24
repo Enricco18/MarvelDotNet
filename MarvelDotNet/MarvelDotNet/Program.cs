@@ -1,5 +1,4 @@
 ﻿using MarvelDotNet.Models;
-using MarvelDotNet.Repository;
 using MarvelDotNet.Utils;
 using System;
 using System.Linq;

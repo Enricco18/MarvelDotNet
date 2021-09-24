@@ -7,7 +7,7 @@ using System.Text;
 namespace MarvelDotNet.Models
 {
     // nome, idade, CPF, e-mail, telefone e endereço.
-    public class Client
+    public class Client 
     {
         public Guid Id {  get; set; }
 
@@ -47,5 +47,6 @@ namespace MarvelDotNet.Models
         {
             return $"ID={this.Id}, {this.Name}, {this.Email}, {this.Phone}, {this.CPF}, {this.Age}";
         }
+
     }
 }
