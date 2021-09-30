@@ -15,21 +15,43 @@ namespace WebApplication.Controllers
     {
         private readonly ClientsDbContext context;
 
+
         public ClientsController(ClientsDbContext context)
         {
             this.context = context;
         }
+
+        /// <summary>
+        /// Get all Clients
+        /// </summary>
+        /// <response code="200">Ok</response>
         [HttpGet]
         public IEnumerable<Client> GetAll()
         {
             return context.Clients;
         }
+
+        /// <summary>
+        /// Get a Client
+        /// </summary>
+        ///  <response code="200">Ok</response>
+        ///   <response code="404">Not Found</response>
         [HttpGet("{cpf}")]
-        public Client Get(String cpf)
+        public IActionResult Get(String cpf)
         {
-            return context.Clients.FirstOrDefault(obj => obj.CPF == cpf);
+            Client client = context.Clients.FirstOrDefault(obj => obj.CPF == cpf);
+            if (client == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(client);
         }
-        
+
+        /// <summary>
+        /// Creates a Client
+        /// </summary>
+        /// <response code="201">Created</response>
         [HttpPost]
         public IActionResult Create(ClientCreateDTO newClient)
         {
@@ -40,6 +62,11 @@ namespace WebApplication.Controllers
             return CreatedAtAction(nameof(Create), new { id = client.Id }, client);
         }
 
+        /// <summary>
+        /// Update a Client
+        /// </summary>
+        ///  <response code="200">Ok</response>
+        ///   <response code="404">Not Found</response>
         [HttpPut("{cpf}")]
         public IActionResult Update(String cpf, ClientUpdateDTO newClient)
         {
@@ -59,6 +86,11 @@ namespace WebApplication.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Deletes a Client
+        /// </summary>
+        ///  <response code="200">Ok</response>
+        ///   <response code="404">Not Found</response>
         [HttpDelete("{cpf}")]
         public IActionResult Delete(String cpf)
         {
